@@ -2086,7 +2086,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 916b4f4143ed7456294aa19afa97bde8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalizeMode: 1
   noiseScale: 20
   octaves: 8
   persistance: 0.33
@@ -2185,10 +2184,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16ce6ecc4242344ccb4045ed364cbcc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detailLevels:
-  - lod: 0
-    visibleDstThreshold: 600
-  viewer: {fileID: 472840204}
   mapMaterial: {fileID: 2100000, guid: b0872f84cf3c7441d893168677410c73, type: 2}
 --- !u!1 &1017312478
 GameObject:

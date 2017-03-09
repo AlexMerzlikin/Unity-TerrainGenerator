@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 public class MapGenerator : MonoBehaviour {
 
-	public Noise.NormalizeMode normalizeMode;
 
 	public const int mapChunkSize = 241;
 
@@ -43,16 +42,16 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	public void RequestMeshData(MapData mapData, int lod, Action<MeshData> callback) {
+	public void RequestMeshData(MapData mapData, Action<MeshData> callback) {
 		ThreadStart threadStart = delegate {
-			MeshDataThread (mapData, lod, callback);
+			MeshDataThread (mapData, callback);
 		};
 
 		new Thread (threadStart).Start ();
 	}
 
-	void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback) {
-		MeshData meshData = MeshGenerator.GenerateTerrainMesh (mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod);
+	void MeshDataThread(MapData mapData, Action<MeshData> callback) {
+		MeshData meshData = MeshGenerator.GenerateTerrainMesh (mapData.heightMap, meshHeightMultiplier, meshHeightCurve);
 		lock (meshDataThreadInfoQueue) {
 			meshDataThreadInfoQueue.Enqueue (new MapThreadInfo<MeshData> (callback, meshData));
 		}
@@ -75,13 +74,13 @@ public class MapGenerator : MonoBehaviour {
 	}
 
     public void GenerateMeshData(MapData mapData) {
-        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, /*lod*/ 0);
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve);
 
     }
 
     public MapData GenerateMapData(Vector2 centre) {
 
-		float[,] noiseMap = Noise.GenerateNoiseMap (mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, centre + offset, normalizeMode);
+		float[,] noiseMap = Noise.GenerateNoiseMap (mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, centre + offset);
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
 		for (int y = 0; y < mapChunkSize; y++) {
