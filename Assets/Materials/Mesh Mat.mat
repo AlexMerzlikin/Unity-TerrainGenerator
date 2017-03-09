@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Mesh Mat
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 75aa929f645f1884a95efda8e1e07a77, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
@@ -69,7 +69,16 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - first:
+        name: _SpecGlossMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - first:
+        name: _Amount
+      second: 0.01
     - first:
         name: _BumpScale
       second: 1
@@ -79,6 +88,9 @@ Material:
     - first:
         name: _DetailNormalMapScale
       second: 1
+    - first:
+        name: _Dist
+      second: 0.016
     - first:
         name: _DstBlend
       second: 0
@@ -92,6 +104,21 @@ Material:
         name: _GlossyReflections
       second: 1
     - first:
+        name: _GradientBlendAmount
+      second: 0.2
+    - first:
+        name: _HeightMax
+      second: 1
+    - first:
+        name: _HeightMin
+      second: -1
+    - first:
+        name: _Level2
+      second: 100
+    - first:
+        name: _Level3
+      second: 200
+    - first:
         name: _Metallic
       second: 0
     - first:
@@ -103,6 +130,12 @@ Material:
     - first:
         name: _Parallax
       second: 0.02
+    - first:
+        name: _PeakLevel
+      second: 300
+    - first:
+        name: _Slope
+      second: 0
     - first:
         name: _SmoothnessTextureChannel
       second: 0
@@ -116,12 +149,54 @@ Material:
         name: _UVSec
       second: 0
     - first:
+        name: _ViewDistance
+      second: 0.05
+    - first:
+        name: _WaterLevel
+      second: 0
+    - first:
         name: _ZWrite
       second: 1
+    - first:
+        name: _viewDistance
+      second: 0.05
     m_Colors:
+    - first:
+        name: _BottomColor
+      second: {r: 1, g: 0, b: 0, a: 1}
     - first:
         name: _Color
       second: {r: 1, g: 1, b: 1, a: 1}
     - first:
+        name: _ColorMax
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _ColorMin
+      second: {r: 0.15862082, g: 0, b: 1, a: 1}
+    - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
+    - first:
+        name: _FogColor
+      second: {r: 0.3, g: 0.4, b: 0.7, a: 1}
+    - first:
+        name: _Level1Color
+      second: {r: 0.65, g: 0.86, b: 0.63, a: 1}
+    - first:
+        name: _Level2Color
+      second: {r: 0.69, g: 0.63, b: 0.31, a: 1}
+    - first:
+        name: _Level3Color
+      second: {r: 0.75, g: 0.53, b: 0, a: 1}
+    - first:
+        name: _PeakColor
+      second: {r: 0.8, g: 0.9, b: 0.9, a: 1}
+    - first:
+        name: _SpecColor
+      second: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - first:
+        name: _TopColor
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _WaterColor
+      second: {r: 0.37, g: 0.78, b: 0.92, a: 1}

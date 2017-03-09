@@ -2086,9 +2086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 916b4f4143ed7456294aa19afa97bde8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawMode: 2
   normalizeMode: 1
-  editorPreviewLOD: 0
   noiseScale: 20
   octaves: 8
   persistance: 0.33
@@ -2138,7 +2136,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  autoUpdate: 1
   regions:
   - name: Water Deep
     height: 0
@@ -2190,10 +2187,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detailLevels:
   - lod: 0
-    visibleDstThreshold: 200
-  - lod: 4
-    visibleDstThreshold: 400
-  - lod: 6
     visibleDstThreshold: 600
   viewer: {fileID: 472840204}
   mapMaterial: {fileID: 2100000, guid: b0872f84cf3c7441d893168677410c73, type: 2}

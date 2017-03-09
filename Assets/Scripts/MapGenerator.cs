@@ -6,14 +6,10 @@ using System.Collections.Generic;
 
 public class MapGenerator : MonoBehaviour {
 
-	public enum DrawMode {NoiseMap, ColourMap, Mesh};
-	public DrawMode drawMode;
-
 	public Noise.NormalizeMode normalizeMode;
 
 	public const int mapChunkSize = 241;
-	[Range(0,6)]
-	public int editorPreviewLOD;
+
 	public float noiseScale;
 
 	public int octaves;
@@ -26,8 +22,6 @@ public class MapGenerator : MonoBehaviour {
 
 	public float meshHeightMultiplier;
 	public AnimationCurve meshHeightCurve;
-
-	public bool autoUpdate;
 
 	public TerrainType[] regions;
 
@@ -80,7 +74,13 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	MapData GenerateMapData(Vector2 centre) {
+    public void GenerateMeshData(MapData mapData) {
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, /*lod*/ 0);
+
+    }
+
+    public MapData GenerateMapData(Vector2 centre) {
+
 		float[,] noiseMap = Noise.GenerateNoiseMap (mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, centre + offset, normalizeMode);
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
@@ -99,15 +99,6 @@ public class MapGenerator : MonoBehaviour {
 
 
 		return new MapData (noiseMap, colourMap);
-	}
-
-	void OnValidate() {
-		if (lacunarity < 1) {
-			lacunarity = 1;
-		}
-		if (octaves < 0) {
-			octaves = 0;
-		}
 	}
 
 	struct MapThreadInfo<T> {
