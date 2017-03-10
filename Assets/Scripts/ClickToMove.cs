@@ -10,8 +10,8 @@ public class ClickToMove : MonoBehaviour {
     private Vector3 targetPosition;
     private Vector3 clickPosition;
 
-    private float timeForClickToMove = 0.0f;
-    private float speed = 30.0f;
+    private float timeForClickToMove = 0f;
+    private float speed = 20f;
     private float playerHeight = 0.8f;
     private float cameraHeight = 1.6f;
     private Transform fpViewCamera;
@@ -22,7 +22,7 @@ public class ClickToMove : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
-        if (Input.GetMouseButtonDown(0) && isEnabled && GameObject.Find("FPView")) {
+        if (Input.GetMouseButtonDown(0) && isEnabled && GameObject.Find("FPView") && !isStarted) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 

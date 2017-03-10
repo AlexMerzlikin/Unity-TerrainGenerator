@@ -10,23 +10,20 @@ public class AeroplaneController : MonoBehaviour {
     private float m_YawEffect = 0.2f;            // The strength of effect for yaw input.
     private float m_BankedTurnEffect = 0.5f;     // The amount of turn from doing a banked turn.
     private float m_AerodynamicEffect = 0.02f;   // How much aerodynamics affect the speed of the aeroplane.
-    private float m_AutoTurnPitch = 0.5f;        // How much the aeroplane automatically pitches when in a banked turn.
-    private float m_AutoRollLevel = 0.2f;        // How much the aeroplane tries to level when not rolling.
-    private float m_AutoPitchLevel = 0.2f;       // How much the aeroplane tries to level when not pitching.
     private float m_AirBrakesEffect = 3f;        // How much the air brakes effect the drag.
     private float m_ThrottleChangeSpeed = 0.3f;  // The speed with which the throttle changes.
     private float m_DragIncreaseFactor = 0.001f; // how much drag should increase with speed.
 
-    public float Throttle { get; private set; }                     // The amount of throttle being used.
-    public bool AirBrakes { get; private set; }                     // Whether or not the air brakes are being applied.
-    public float ForwardSpeed { get; private set; }                 // How fast the aeroplane is traveling in it's forward direction.
-    public float EnginePower { get; private set; }                  // How much power the engine is being given.
-    public float RollAngle { get; private set; }
-    public float PitchAngle { get; private set; }
-    public float RollInput { get; private set; }
-    public float PitchInput { get; private set; }
-    public float YawInput { get; private set; }
-    public float ThrottleInput { get; private set; }
+    public float throttle;                    // The amount of throttle being used.
+    public bool airBrakes;                     // Whether or not the air brakes are being applied.
+    public float moveSpeed;             // How fast the aeroplane is traveling in it's forward direction.
+    public float enginePower;                // How much power the engine is being given.
+    public float roll;
+    public float pitch;
+    public float rollInput;
+    public float pitchInput;
+    public float yawInput;
+    public float throttleInput;
 
     private float m_OriginalDrag;         // The drag when the scene starts.
     private float m_OriginalAngularDrag;  // The angular drag when the scene starts.
@@ -38,60 +35,48 @@ public class AeroplaneController : MonoBehaviour {
     public float maxRollAngle = 80;
     public float maxPitchAngle = 80;
 
-    private float m_Throttle;
-    private float m_Yaw;
+    private bool isCrashed;
 
     private void Start() {
         m_Rigidbody = GetComponent<Rigidbody>();
         // Store original drag settings, these are modified during flight.
         m_OriginalDrag = m_Rigidbody.drag;
         m_OriginalAngularDrag = m_Rigidbody.angularDrag;
-        m_OriginalDrag = m_Rigidbody.drag;
     }
 
     private void FixedUpdate() {
         // Read input for the pitch, yaw, roll and throttle of the aeroplane.
-        float roll = Input.GetAxis("Mouse X");
-        float pitch = Input.GetAxis("Mouse Y");
-        m_Yaw = Input.GetAxis("Horizontal");
-        m_Throttle = Input.GetAxis("Vertical");
+        this.rollInput = Input.GetAxis("Mouse X");
+        this.pitchInput = Input.GetAxis("Mouse Y");
+        this.yawInput = Input.GetAxis("Horizontal");
+        this.throttleInput = Input.GetAxis("Vertical");
 
-        // Pass the input to the aeroplane
-        Move(roll, pitch, m_Yaw, m_Throttle);
+        Move();
     }
 
-    public void Move(float rollInput, float pitchInput, float yawInput, float throttleInput) {
+    public void Move() {
         // transfer input parameters into properties.s
-        RollInput = rollInput;
-        PitchInput = pitchInput;
-        YawInput = yawInput;
-        ThrottleInput = throttleInput;
 
-        ClampInputs();
-
-        CalculateRollAndPitchAngles();
-
-        CalculateForwardSpeed();
-
-        ControlThrottle();
-
-        CalculateDrag();
-
-        CaluclateAerodynamicEffect();
-
-        CalculateLinearForces();
-
-        CalculateTorque();
-
+        if (!isCrashed) {
+            
+            ClampInputs();
+            CalculateRollAndPitchAngles();
+            CalculateForwardSpeed();
+            ControlThrottle();
+            CalculateDrag();
+            CaluclateAerodynamicEffect();
+            CalculateLinearForces();
+            CalculateTorque();
+        }
     }
 
 
     private void ClampInputs() {
         // clamp the inputs to -1 to 1 range
-        RollInput = Mathf.Clamp(RollInput, -1, 1);
-        PitchInput = Mathf.Clamp(PitchInput, -1, 1);
-        YawInput = Mathf.Clamp(YawInput, -1, 1);
-        ThrottleInput = Mathf.Clamp(ThrottleInput, -1, 1);
+        rollInput = Mathf.Clamp(rollInput, -1, 1);
+        pitchInput = Mathf.Clamp(pitchInput, -1, 1);
+        yawInput = Mathf.Clamp(yawInput, -1, 1);
+        throttleInput = Mathf.Clamp(throttleInput, -1, 1);
     }
 
 
@@ -105,11 +90,11 @@ public class AeroplaneController : MonoBehaviour {
             flatForward.Normalize();
             // calculate current pitch angle
             var localFlatForward = transform.InverseTransformDirection(flatForward);
-            PitchAngle = Mathf.Atan2(localFlatForward.y, localFlatForward.z);
+            pitch = Mathf.Atan2(localFlatForward.y, localFlatForward.z);
             // calculate current roll angle
             var flatRight = Vector3.Cross(Vector3.up, flatForward);
             var localFlatRight = transform.InverseTransformDirection(flatRight);
-            RollAngle = Mathf.Atan2(localFlatRight.y, localFlatRight.x);
+            roll = Mathf.Atan2(localFlatRight.y, localFlatRight.x);
         }
     }
 
@@ -117,18 +102,18 @@ public class AeroplaneController : MonoBehaviour {
     private void CalculateForwardSpeed() {
         // Forward speed is the speed in the planes's forward direction (not the same as its velocity, eg if falling in a stall)
         var localVelocity = transform.InverseTransformDirection(m_Rigidbody.velocity);
-        ForwardSpeed = Mathf.Max(0, localVelocity.z);
+        moveSpeed = Mathf.Max(0, localVelocity.z);
     }
 
 
     private void ControlThrottle() {
-       
+
 
         // Adjust throttle based on throttle input (or immobilized state)
-        Throttle = Mathf.Clamp01(Throttle + ThrottleInput * Time.deltaTime * m_ThrottleChangeSpeed);
+        throttle = Mathf.Clamp01(throttle + throttleInput * Time.deltaTime * m_ThrottleChangeSpeed);
 
         // current engine power is just:
-        EnginePower = Throttle * m_MaxEnginePower;
+        enginePower = throttle * m_MaxEnginePower;
     }
 
 
@@ -136,9 +121,9 @@ public class AeroplaneController : MonoBehaviour {
         // increase the drag based on speed, since a constant drag doesn't seem "Real" (tm) enough
         float extraDrag = m_Rigidbody.velocity.magnitude * m_DragIncreaseFactor;
         // Air brakes work by directly modifying drag. This part is actually pretty realistic!
-        m_Rigidbody.drag = (AirBrakes ? (m_OriginalDrag + extraDrag) * m_AirBrakesEffect : m_OriginalDrag + extraDrag);
+        m_Rigidbody.drag = (airBrakes ? (m_OriginalDrag + extraDrag) * m_AirBrakesEffect : m_OriginalDrag + extraDrag);
         // Forward speed affects angular drag - at high forward speed, it's much harder for the plane to spin
-        m_Rigidbody.angularDrag = m_OriginalAngularDrag * ForwardSpeed;
+        m_Rigidbody.angularDrag = m_OriginalAngularDrag * moveSpeed;
     }
 
 
@@ -153,8 +138,8 @@ public class AeroplaneController : MonoBehaviour {
             m_AeroFactor *= m_AeroFactor;
             // Finally we calculate a new velocity by bending the current velocity direction towards
             // the the direction the plane is facing, by an amount based on this aeroFactor
-            var newVelocity = Vector3.Lerp(m_Rigidbody.velocity, transform.forward * ForwardSpeed,
-                                           m_AeroFactor * ForwardSpeed * m_AerodynamicEffect * Time.deltaTime);
+            var newVelocity = Vector3.Lerp(m_Rigidbody.velocity, transform.forward * moveSpeed,
+                                           m_AeroFactor * moveSpeed * m_AerodynamicEffect * Time.deltaTime);
             m_Rigidbody.velocity = newVelocity;
 
             // also rotate the plane towards the direction of movement - this should be a very small effect, but means the plane ends up
@@ -171,15 +156,15 @@ public class AeroplaneController : MonoBehaviour {
         // we accumulate forces into this variable:
         var forces = Vector3.zero;
         // Add the engine power in the forward direction
-        forces += EnginePower * transform.forward;
+        forces += enginePower * transform.forward;
         // The direction that the lift force is applied is at right angles to the plane's velocity (usually, this is 'up'!)
         var liftDirection = Vector3.Cross(m_Rigidbody.velocity, transform.right).normalized;
         // The amount of lift drops off as the plane increases speed - in reality this occurs as the pilot retracts the flaps
         // shortly after takeoff, giving the plane less drag, but less lift. Because we don't simulate flaps, this is
         // a simple way of doing it automatically:
-        var zeroLiftFactor = Mathf.InverseLerp(m_ZeroLiftSpeed, 0, ForwardSpeed);
+        var zeroLiftFactor = Mathf.InverseLerp(m_ZeroLiftSpeed, 0, moveSpeed);
         // Calculate and add the lift power
-        var liftPower = ForwardSpeed * ForwardSpeed * m_Lift * zeroLiftFactor * m_AeroFactor;
+        var liftPower = moveSpeed * moveSpeed * m_Lift * zeroLiftFactor * m_AeroFactor;
         forces += liftPower * liftDirection;
         // Apply the calculated forces to the the Rigidbody
         m_Rigidbody.AddForce(forces);
@@ -190,16 +175,21 @@ public class AeroplaneController : MonoBehaviour {
         // We accumulate torque forces into this variable:
         var torque = Vector3.zero;
         // Add torque for the pitch based on the pitch input.
-        torque += PitchInput * m_PitchEffect * transform.right;
+        torque += pitchInput * m_PitchEffect * transform.right;
         // Add torque for the yaw based on the yaw input.
-        torque += YawInput * m_YawEffect * transform.up;
+        torque += yawInput * m_YawEffect * transform.up;
         // Add torque for the roll based on the roll input.
-        torque += -RollInput * m_RollEffect * transform.forward;
+        torque += -rollInput * m_RollEffect * transform.forward;
         // Add torque for banked turning.
         torque += m_BankedTurnAmount * m_BankedTurnEffect * transform.up;
         // The total torque is multiplied by the forward speed, so the controls have more effect at high speed,
         // and little effect at low speed, or when not moving in the direction of the nose of the plane
         // (i.e. falling while stalled)
-        m_Rigidbody.AddTorque(torque * ForwardSpeed * m_AeroFactor);
+        m_Rigidbody.AddTorque(torque * moveSpeed * m_AeroFactor);
+    }
+
+    void OnCollisionEnter() {
+        Debug.Log("Crashed");
+        isCrashed = true;
     }
 }

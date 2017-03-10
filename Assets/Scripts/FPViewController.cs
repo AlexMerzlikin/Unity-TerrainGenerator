@@ -1,158 +1,128 @@
 using System;
 using UnityEngine;
 
+public class FPViewController : MonoBehaviour {
 
-  
-    public class FPViewController : MonoBehaviour {
-     
-            public float ForwardSpeed = 8.0f;   // Speed when walking forward
+    public float moveSpeed = 8.0f;   // Speed when walking forward
+    public float jumpForce = 30f;
+    public float currentMoveSpeed = 8f;
 
-            public float JumpForce = 30f;
+    public float groundCheckDistance = 0.01f; // distance for checking if the controller is grounded ( 0.01f seems to work best for this )
 
-            public float CurrentTargetSpeed = 8f;
+    public Camera cam;
+    private Rigidbody _rigidbody;
+    private CapsuleCollider capsuleCollider;
+    private Vector3 groundContactNormal;
+    private bool hasJumped;
+    private bool isPreviouslyGrounded;
+    private bool isJumping;
+    private bool isGrounded;
 
-            public void UpdateDesiredTargetSpeed(Vector2 input) {
-                if (input == Vector2.zero) return;
+    public float mouseLookMinimumX = -90f;
+    public float mouseLookMaximumX = 90f;
 
-                //forwards
-                //handled last as if strafing and moving forward at the same time forwards speed should take precedence
-                CurrentTargetSpeed = ForwardSpeed;
+    private Quaternion characterRotation;
+    private Quaternion cameraRotation;
 
+    private void Start() {
+        _rigidbody = GetComponent<Rigidbody>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
+
+        characterRotation = transform.localRotation;
+        cameraRotation = cam.transform.localRotation;
+    }
+
+    private void Update() {
+        if (Input.GetButtonDown("Jump") && !hasJumped) {
+            hasJumped = true;
+        }
+
+        float yRot = Input.GetAxis("Mouse X");
+        float xRot = Input.GetAxis("Mouse Y");
+
+        characterRotation *= Quaternion.Euler(0f, yRot, 0f);
+        cameraRotation *= Quaternion.Euler(-xRot, 0f, 0f);
+
+        cameraRotation = ClampRotationAroundXAxis(cameraRotation);
+        transform.localRotation = characterRotation;
+        cam.transform.localRotation = cameraRotation;
+    }
+
+    Quaternion ClampRotationAroundXAxis(Quaternion q) {
+        q.x /= q.w;
+        q.y /= q.w;
+        q.z /= q.w;
+        q.w = 1.0f;
+
+        float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan(q.x);
+        angleX = Mathf.Clamp(angleX, mouseLookMinimumX, mouseLookMaximumX);
+        q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
+
+        return q;
+    }
+
+    private void FixedUpdate() {
+        GroundCheck();
+        Vector2 input = ReadInput();
+
+        if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && isGrounded) {
+            // always move along the camera forward as it is the direction that it being aimed at
+            Vector3 moveDirection = cam.transform.forward * input.y + cam.transform.right * input.x;
+            moveDirection = Vector3.ProjectOnPlane(moveDirection, groundContactNormal).normalized;
+
+            if (input != Vector2.zero) {
+                currentMoveSpeed = moveSpeed;
             }
 
-
-        
-
-
-        
-            public float groundCheckDistance = 0.01f; // distance for checking if the controller is grounded ( 0.01f seems to work best for this )
-            [Tooltip("set it to 0.1 or more if you get stuck in wall")]
-        
-
-
-        public Camera cam;
-        public MouseLook mouseLook = new MouseLook();
-
-
-        private Rigidbody m_RigidBody;
-        private CapsuleCollider m_Capsule;
-        private float m_YRotation;
-        private Vector3 m_GroundContactNormal;
-        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
-
-
-        public Vector3 Velocity {
-            get { return m_RigidBody.velocity; }
-        }
-
-        public bool Grounded {
-            get { return m_IsGrounded; }
-        }
-
-        public bool Jumping {
-            get { return m_Jumping; }
-        }
-
-
-        private void Start() {
-            m_RigidBody = GetComponent<Rigidbody>();
-            m_Capsule = GetComponent<CapsuleCollider>();
-            mouseLook.Init(transform, cam.transform);
-        }
-
-
-        private void Update() {
-            RotateView();
-
-            if (Input.GetButtonDown("Jump") && !m_Jump) {
-                m_Jump = true;
-            }
-        }
-
-
-        private void FixedUpdate() {
-            GroundCheck();
-            Vector2 input = GetInput();
-
-            if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && m_IsGrounded) {
-                // always move along the camera forward as it is the direction that it being aimed at
-                Vector3 desiredMove = cam.transform.forward * input.y + cam.transform.right * input.x;
-                desiredMove = Vector3.ProjectOnPlane(desiredMove, m_GroundContactNormal).normalized;
-
-                desiredMove.x = desiredMove.x * CurrentTargetSpeed;
-                desiredMove.z = desiredMove.z * CurrentTargetSpeed;
-                desiredMove.y = desiredMove.y * CurrentTargetSpeed;
-                if (m_RigidBody.velocity.sqrMagnitude <
-                    (CurrentTargetSpeed * CurrentTargetSpeed)) {
-                    m_RigidBody.AddForce(desiredMove, ForceMode.Impulse);
-                }
-            }
-
-            if (m_IsGrounded) {
-                m_RigidBody.drag = 5f;
-
-                if (m_Jump) {
-                    m_RigidBody.drag = 0f;
-                    m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
-                    m_RigidBody.AddForce(new Vector3(0f, JumpForce, 0f), ForceMode.Impulse);
-                    m_Jumping = true;
-                }
-
-                if (!m_Jumping && Mathf.Abs(input.x) < float.Epsilon && Mathf.Abs(input.y) < float.Epsilon && m_RigidBody.velocity.magnitude < 1f) {
-                    m_RigidBody.Sleep();
-                }
-            }
-            else {
-                m_RigidBody.drag = 0f;
-               
-            }
-            m_Jump = false;
-        }
-
-      
-
-        private Vector2 GetInput() {
-
-            Vector2 input = new Vector2 {
-                x = Input.GetAxis("Horizontal"),
-                y = Input.GetAxis("Vertical")
-            };
-            UpdateDesiredTargetSpeed(input);
-            return input;
-        }
-
-
-        private void RotateView() {
-            //avoids the mouse looking if the game is effectively paused
-            if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
-
-            // get the rotation before it's changed
-            float oldYRotation = transform.eulerAngles.y;
-
-            mouseLook.LookRotation(transform, cam.transform);
-
-            if (m_IsGrounded) {
-                // Rotate the rigidbody velocity to match the new direction that the character is looking
-                Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
-                m_RigidBody.velocity = velRotation * m_RigidBody.velocity;
+            moveDirection.x = moveDirection.x * currentMoveSpeed;
+            moveDirection.z = moveDirection.z * currentMoveSpeed;
+            moveDirection.y = moveDirection.y * currentMoveSpeed;
+            if (_rigidbody.velocity.sqrMagnitude <
+                (currentMoveSpeed * currentMoveSpeed)) {
+                _rigidbody.AddForce(moveDirection, ForceMode.Impulse);
             }
         }
 
-        /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
-        private void GroundCheck() {
-            m_PreviouslyGrounded = m_IsGrounded;
-            RaycastHit hitInfo;
-            if (Physics.SphereCast(transform.position, m_Capsule.radius * 1.0f, Vector3.down, out hitInfo,
-                                   ((m_Capsule.height / 2f) - m_Capsule.radius) + groundCheckDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore)) {
-                m_IsGrounded = true;
-                m_GroundContactNormal = hitInfo.normal;
+        if (isGrounded) {
+            _rigidbody.drag = 5f;
+            if (hasJumped) {
+                _rigidbody.drag = 0f;
+                _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0f, _rigidbody.velocity.z);
+                _rigidbody.AddForce(new Vector3(0f, jumpForce, 0f), ForceMode.Impulse);
+                isJumping = true;
             }
-            else {
-                m_IsGrounded = false;
-                m_GroundContactNormal = Vector3.up;
-            }
-            if (!m_PreviouslyGrounded && m_IsGrounded && m_Jumping) {
-                m_Jumping = false;
-            }
+        }
+        else {
+            _rigidbody.drag = 0f;
+        }
+        hasJumped = false;
+    }
+
+
+
+    private Vector2 ReadInput() {
+        Vector2 input = new Vector2 {
+            x = Input.GetAxis("Horizontal"),
+            y = Input.GetAxis("Vertical")
+        };
+        return input;
+    }
+
+    /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
+    private void GroundCheck() {
+        isPreviouslyGrounded = isGrounded;
+        RaycastHit hitInfo;
+        if (Physics.SphereCast(transform.position, capsuleCollider.radius * 1.0f, Vector3.down, out hitInfo,
+                               ((capsuleCollider.height / 2f) - capsuleCollider.radius) + groundCheckDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore)) {
+            isGrounded = true;
+            groundContactNormal = hitInfo.normal;
+        }
+        else {
+            isGrounded = false;
+            groundContactNormal = Vector3.up;
+        }
+        if (!isPreviouslyGrounded && isGrounded && isJumping) {
+            isJumping = false;
         }
     }
+}
