@@ -2,9 +2,8 @@ using System;
 using UnityEngine;
 
 
-namespace UnityStandardAssets.Characters.FirstPerson {
   
-    public class RigidbodyFirstPersonController : MonoBehaviour {
+    public class FPViewController : MonoBehaviour {
      
             public float ForwardSpeed = 8.0f;   // Speed when walking forward
 
@@ -157,4 +156,3 @@ namespace UnityStandardAssets.Characters.FirstPerson {
             }
         }
     }
-}

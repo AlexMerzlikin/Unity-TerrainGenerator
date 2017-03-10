@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class EndlessTerrain : MonoBehaviour {
+public class TerrainGenerator : MonoBehaviour {
 
     const float scale = 5f;
 

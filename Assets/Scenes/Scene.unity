@@ -989,7 +989,7 @@ GameObject:
   - component: {fileID: 492619029}
   - component: {fileID: 492619033}
   m_Layer: 0
-  m_Name: FPSView
+  m_Name: FPView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3633,28 +3633,13 @@ GameObject:
   - component: {fileID: 1939038809}
   - component: {fileID: 1939038808}
   - component: {fileID: 1939038807}
-  - component: {fileID: 1939038802}
   m_Layer: 8
   m_Name: AircraftPropeller
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1939038802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400004, guid: 7e1741de780e13f42a448fdb5b60c1e1,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1939038798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b821cfe117414d14ea5ad71c5b3c503f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxRollAngle: 80
-  maxPitchAngle: 80
+  m_IsActive: 1
 --- !u!114 &1939038807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3667,20 +3652,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a6615124795442b98c1f03500003e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxEnginePower: 25
-  m_Lift: 0.015
-  m_ZeroLiftSpeed: 70
-  m_RollEffect: 1
-  m_PitchEffect: 1
-  m_YawEffect: 0.5
-  m_BankedTurnEffect: 0.5
-  m_AerodynamicEffect: 0.03
-  m_AutoTurnPitch: 0.5
-  m_AutoRollLevel: 0.1
-  m_AutoPitchLevel: 0.1
-  m_AirBrakesEffect: 3
-  m_ThrottleChangeSpeed: 0.3
-  m_DragIncreaseFactor: 0.001
+  maxRollAngle: 80
+  maxPitchAngle: 80
 --- !u!54 &1939038808
 Rigidbody:
   m_ObjectHideFlags: 0
