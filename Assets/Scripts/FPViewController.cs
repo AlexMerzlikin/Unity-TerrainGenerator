@@ -5,7 +5,7 @@ public class FPViewController : MonoBehaviour {
 
     public float moveSpeed = 8.0f;   // Speed when walking forward
     public float jumpForce = 30f;
-    public float currentMoveSpeed = 8f;
+    public float currentTargetSpeed = 8f;
 
     public float groundCheckDistance = 0.01f; // distance for checking if the controller is grounded ( 0.01f seems to work best for this )
 
@@ -18,8 +18,8 @@ public class FPViewController : MonoBehaviour {
     private bool isJumping;
     private bool isGrounded;
 
-    public float mouseLookMinimumX = -90f;
-    public float mouseLookMaximumX = 90f;
+    public float MinimumX = -90f;
+    public float MaximumX = 90f;
 
     private Quaternion characterRotation;
     private Quaternion cameraRotation;
@@ -55,7 +55,7 @@ public class FPViewController : MonoBehaviour {
         q.w = 1.0f;
 
         float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan(q.x);
-        angleX = Mathf.Clamp(angleX, mouseLookMinimumX, mouseLookMaximumX);
+        angleX = Mathf.Clamp(angleX, MinimumX, MaximumX);
         q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
 
         return q;
@@ -63,23 +63,23 @@ public class FPViewController : MonoBehaviour {
 
     private void FixedUpdate() {
         GroundCheck();
-        Vector2 input = ReadInput();
+        Vector2 input = GetInput();
 
         if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && isGrounded) {
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 moveDirection = cam.transform.forward * input.y + cam.transform.right * input.x;
-            moveDirection = Vector3.ProjectOnPlane(moveDirection, groundContactNormal).normalized;
+            Vector3 desiredMove = cam.transform.forward * input.y + cam.transform.right * input.x;
+            desiredMove = Vector3.ProjectOnPlane(desiredMove, groundContactNormal).normalized;
 
             if (input != Vector2.zero) {
-                currentMoveSpeed = moveSpeed;
+                currentTargetSpeed = moveSpeed;
             }
 
-            moveDirection.x = moveDirection.x * currentMoveSpeed;
-            moveDirection.z = moveDirection.z * currentMoveSpeed;
-            moveDirection.y = moveDirection.y * currentMoveSpeed;
+            desiredMove.x = desiredMove.x * currentTargetSpeed;
+            desiredMove.z = desiredMove.z * currentTargetSpeed;
+            desiredMove.y = desiredMove.y * currentTargetSpeed;
             if (_rigidbody.velocity.sqrMagnitude <
-                (currentMoveSpeed * currentMoveSpeed)) {
-                _rigidbody.AddForce(moveDirection, ForceMode.Impulse);
+                (currentTargetSpeed * currentTargetSpeed)) {
+                _rigidbody.AddForce(desiredMove, ForceMode.Impulse);
             }
         }
 
@@ -100,7 +100,8 @@ public class FPViewController : MonoBehaviour {
 
 
 
-    private Vector2 ReadInput() {
+    private Vector2 GetInput() {
+
         Vector2 input = new Vector2 {
             x = Input.GetAxis("Horizontal"),
             y = Input.GetAxis("Vertical")
