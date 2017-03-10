@@ -1,13 +1,12 @@
 using System;
 using UnityEngine;
 
-[Serializable]
 public class MouseLook {
     public float XSensitivity = 2f;
     public float YSensitivity = 2f;
     public bool clampVerticalRotation = true;
-    public float MinimumX = -90F;
-    public float MaximumX = 90F;
+    public float MinimumX = -90f;
+    public float MaximumX = 90f;
 
 
     private Quaternion m_CharacterTargetRot;
@@ -27,17 +26,12 @@ public class MouseLook {
         m_CharacterTargetRot *= Quaternion.Euler(0f, yRot, 0f);
         m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
 
-        if (clampVerticalRotation)
+        if (clampVerticalRotation) {
             m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
-
+        }
         character.localRotation = m_CharacterTargetRot;
         camera.localRotation = m_CameraTargetRot;
-
-
-
     }
-
-
 
     Quaternion ClampRotationAroundXAxis(Quaternion q) {
         q.x /= q.w;

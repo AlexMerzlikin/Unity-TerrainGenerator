@@ -2,6 +2,8 @@
 	Properties{
 		_MainTex("Texture", 2D) = "white" {}
 		_FogColor("Fog Color", Color) = (0.3, 0.4, 0.7, 1.0)
+
+		//Fog distance. Change this value through inspector in Materials/Mesh Mat before game starts. Instances of this material are applied to terrain chunks.
 		_Dist("View Distance", Range(0,0.5)) = 0.01
 	}
 		SubShader{
