@@ -430,7 +430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &492619029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +448,8 @@ MonoBehaviour:
   currentTargetSpeed: 30
   groundCheckDistance: 0.01
   cam: {fileID: 838746098}
+  minimumX: -90
+  maximumX: 90
 --- !u!136 &492619030
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1657,7 +1659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1939038807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1670,8 +1672,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235a6615124795442b98c1f03500003e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRollAngle: 80
-  maxPitchAngle: 80
 --- !u!54 &1939038808
 Rigidbody:
   m_ObjectHideFlags: 0

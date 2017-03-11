@@ -56,7 +56,7 @@ public class ClickToMove : MonoBehaviour {
     /// Moves the player towards click position via Vector3.MoveTowards method.
     /// Since MoveTowards doesn't take into account terrain and just lineary changes player position
     /// The distance to the ground is checked and position.y is decreased by this amount to simulate 
-    /// actual movement across the terrain
+    /// actual movement across the terrain. When the target position is reached, the bool variable is set to false and timer to 0. 
     /// </summary>
     private void MoveToTarget() {
         RaycastHit groundHit;
