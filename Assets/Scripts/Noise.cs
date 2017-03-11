@@ -2,7 +2,18 @@
 using System.Collections;
 
 public static class Noise {
-
+    /// <summary>
+    /// Generates a noiseMap which is 2-dimensional array of floats, representing some noise value.
+    /// </summary>
+    /// <param name="mapWidth"> Width of the noise map</param>
+    /// <param name="mapHeight"> Height of the noise map</param>
+    /// <param name="seed"> An argument to pass to System.Random to generate a noise map. </param>
+    /// <param name="scale"> Scale of the noise. Cannot be less or equal to zero. </param>
+    /// <param name="octaves"> Number of octaves used in noise generation. </param>
+    /// <param name="lacunarity"> Controls increase in frequency of octaves. Higher lacunarity means more small details. </param>
+    /// <param name="persistance"> Controls decrease in amplitude of octaves. Determines how much small features influence the overall shape of the map. </param>
+    /// <param name="offset"> Offset allows to scroll noise map values. </param>
+    /// <returns></returns>
     public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset) {
         float[,] noiseMap = new float[mapWidth, mapHeight];
 

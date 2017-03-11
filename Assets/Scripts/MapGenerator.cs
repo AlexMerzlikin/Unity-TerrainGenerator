@@ -75,7 +75,6 @@ public class MapGenerator : MonoBehaviour {
 
     public void GenerateMeshData(MapData mapData) {
         MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve);
-
     }
 
     public MapData GenerateMapData(Vector2 centre) {

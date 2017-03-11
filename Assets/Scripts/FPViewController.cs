@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class FPViewController : MonoBehaviour {
 
-    public float moveSpeed = 8.0f;   // Speed when walking forward
+    public float moveSpeed = 8.0f; 
     public float jumpForce = 30f;
     public float currentTargetSpeed = 8f;
 
-    public float groundCheckDistance = 0.01f; // distance for checking if the controller is grounded ( 0.01f seems to work best for this )
+    public float groundCheckDistance = 0.01f;
 
     public Camera cam;
     private Rigidbody _rigidbody;
@@ -18,12 +18,16 @@ public class FPViewController : MonoBehaviour {
     private bool isJumping;
     private bool isGrounded;
 
-    public float MinimumX = -90f;
-    public float MaximumX = 90f;
+    public float minimumX = -90f;
+    public float maximumX = 90f;
 
     private Quaternion characterRotation;
     private Quaternion cameraRotation;
 
+    /// <summary>
+    /// Cache rigidbody and capsule collider of the player.
+    /// Set initial character and camera rotation.
+    /// </summary>
     private void Start() {
         _rigidbody = GetComponent<Rigidbody>();
         capsuleCollider = GetComponent<CapsuleCollider>();
@@ -32,6 +36,10 @@ public class FPViewController : MonoBehaviour {
         cameraRotation = cam.transform.localRotation;
     }
 
+    /// <summary>
+    /// Get jump input if player is not in the air already.
+    /// Read mouse input and apply rotation to character and camera.
+    /// </summary>
     private void Update() {
         if (Input.GetButtonDown("Jump") && !hasJumped) {
             hasJumped = true;
@@ -48,25 +56,34 @@ public class FPViewController : MonoBehaviour {
         cam.transform.localRotation = cameraRotation;
     }
 
-    Quaternion ClampRotationAroundXAxis(Quaternion q) {
-        q.x /= q.w;
-        q.y /= q.w;
-        q.z /= q.w;
-        q.w = 1.0f;
+    /// <summary>
+    /// Restrics mouse look at minumumX and maximumX to simulate real ability of a person to look along X axis.
+    /// </summary>
+    /// <param name="currentRotation">Current camera rotation</param>
+    /// <returns></returns>
+    Quaternion ClampRotationAroundXAxis(Quaternion currentRotation) {
+        currentRotation.x /= currentRotation.w;
+        currentRotation.y /= currentRotation.w;
+        currentRotation.z /= currentRotation.w;
+        currentRotation.w = 1.0f;
 
-        float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan(q.x);
-        angleX = Mathf.Clamp(angleX, MinimumX, MaximumX);
-        q.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
+        float angleX = 2.0f * Mathf.Rad2Deg * Mathf.Atan(currentRotation.x);
+        angleX = Mathf.Clamp(angleX, minimumX, maximumX);
+        currentRotation.x = Mathf.Tan(0.5f * Mathf.Deg2Rad * angleX);
 
-        return q;
+        return currentRotation;
     }
 
+    /// <summary>
+    /// Check if the player is grounded.
+    /// Apply WASD input. If the player velocity is smaller than target speed, add force to player's rigidbody.
+    /// If player is grounded, apply drag to stop the player when WASD input is zero. 
+    /// If the player has jumped or not grounded drag is set to 0, so it can jump or slide down the slopes (not sticking to the mountains)
+    /// </summary>
     private void FixedUpdate() {
         GroundCheck();
         Vector2 input = GetInput();
-
         if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && isGrounded) {
-            // always move along the camera forward as it is the direction that it being aimed at
             Vector3 desiredMove = cam.transform.forward * input.y + cam.transform.right * input.x;
             desiredMove = Vector3.ProjectOnPlane(desiredMove, groundContactNormal).normalized;
 
@@ -98,8 +115,10 @@ public class FPViewController : MonoBehaviour {
         hasJumped = false;
     }
 
-
-
+    /// <summary>
+    /// Get WASD input
+    /// </summary>
+    /// <returns></returns>
     private Vector2 GetInput() {
 
         Vector2 input = new Vector2 {
@@ -109,7 +128,10 @@ public class FPViewController : MonoBehaviour {
         return input;
     }
 
-    /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
+
+    /// <summary>
+    /// Since sphere collider is used for character collider cast sphere down the player to check if they grounded or in the air (e.g. jumped)
+    /// </summary>
     private void GroundCheck() {
         isPreviouslyGrounded = isGrounded;
         RaycastHit hitInfo;
