@@ -16,6 +16,10 @@ public class MapGenerator : MonoBehaviour {
     public float meshHeightMultiplier;
     public AnimationCurve meshHeightCurve;
 
+    //FogDensity 0 means no fog
+    [Range(0f, 0.5f)]
+    public float fogDensity = 0.005f;
+
     public TerrainType[] regions;
 
     /// <summary>

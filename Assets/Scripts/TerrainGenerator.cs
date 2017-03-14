@@ -19,6 +19,7 @@ public class TerrainGenerator : MonoBehaviour {
     /// </summary>
     void Start() {
         mapGenerator = FindObjectOfType<MapGenerator>();
+        mapMaterial.SetFloat("_Dist", mapGenerator.fogDensity);
         chunkSize = MapGenerator.mapChunkSize - 1;
         terrainRadius = 2;
         GenerateChunks();
